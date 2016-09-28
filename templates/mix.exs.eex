@@ -1,0 +1,27 @@
+defmodule <%= prj_name %>.Mixfile do
+  use Mix.Project
+
+  def project do
+    [app: <%= prj_name_atom %>,
+     version: "<%= version %>",
+     elixir: "~> 1.2",
+     build_embedded: Mix.env == :prod,
+     start_permanent: Mix.env == :prod,
+     deps: deps]
+  end
+
+  # Configuration for the OTP application
+  #
+  # Type "mix help compile.app" for more information
+  def application do
+    [applications: [:logger],
+     mod: {<%= prj_name %>, []}]
+  end
+
+  defp deps do
+    [
+      {:riffed, git: "git@github.com:renderedtext/riffed",
+        ref: "origin/master"},
+    ]
+  end
+end

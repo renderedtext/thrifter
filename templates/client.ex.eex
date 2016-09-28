@@ -1,0 +1,23 @@
+defmodule <%= prj_name %>.Daemon do
+  use Riffed.Client,
+    auto_import_structs: true,
+    service: <%= service_name %>,
+    structs: <%= prj_name %>.Model,
+    client_opts: [
+      retries: 3,
+      framed: true],
+    import: <%= function_names %>
+
+  defenum StatusCode do
+    :success -> 0
+    :failure -> 1
+    :invalid_request -> 2
+  end
+
+  enumerize_struct Status, code: StatusCode
+
+  def start_link({host, port}, timeout) do
+    options = [name: __MODULE__, timeout: timeout]
+    GenServer.start_link(__MODULE__, {host, port}, options)
+  end
+end
