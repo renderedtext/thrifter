@@ -1,0 +1,2 @@
+defmodule Thrifter do
+end
