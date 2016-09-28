@@ -68,20 +68,18 @@ defmodule Thrifter.TemplateManager do
 
   @thrifter_app_name :thrifter
   defp template_path(template_name) do
-    project        = Mix.Project.config
-    thrifter_elixir_dependancy =
-      project[:deps][@thrifter_app_name] |> thrifter_elixir_dep
-    [thrifter_elixir_dependancy, "templates", template_name <> ".eex"]
-    |> Path.join()
+    project             = Mix.Project.config
+    thrifter_dependancy = project[:deps][@thrifter_app_name] |> thrifter_dep
+    [thrifter_dependancy, "templates", template_name <> ".eex"] |> Path.join
   end
 
   def save_file(content, target), do:
     Path.join([generated_path] ++ target) |> File.write(content)
 
-  defp thrifter_elixir_dep(nil),  do: "./"
-  defp thrifter_elixir_dep(deps), do: deps |> thrifter_elixir_path
+  defp thrifter_dep(nil),  do: "./"
+  defp thrifter_dep(deps), do: deps |> thrifter_path
 
-  defp thrifter_elixir_path([path: path]), do: path
-  defp thrifter_elixir_path(_), do: Path.join(["deps", @thrifter_app_name |> Atom.to_string])
+  defp thrifter_path([path: path]), do: path
+  defp thrifter_path(_), do: Path.join(["deps", @thrifter_app_name |> Atom.to_string])
 
 end

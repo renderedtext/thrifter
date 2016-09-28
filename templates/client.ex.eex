@@ -8,13 +8,6 @@ defmodule <%= prj_name %>.Daemon do
       framed: true],
     import: <%= function_names %>
 
-  defenum StatusCode do
-    :success -> 0
-    :failure -> 1
-    :invalid_request -> 2
-  end
-
-  enumerize_struct Status, code: StatusCode
 
   def start_link({host, port}, timeout) do
     options = [name: __MODULE__, timeout: timeout]
