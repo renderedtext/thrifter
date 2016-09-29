@@ -16,8 +16,7 @@ defmodule Thrifter.Mixfile do
 
   defp deps do
     [
-      {:riffed, git: "git@github.com:renderedtext/riffed",
-        ref: "origin/master"},
+      {:riffed, github: "pinterest/riffed"}
     ]
   end
 end
