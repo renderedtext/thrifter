@@ -8,6 +8,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @bin_path "#{@gen_path}/bin"
   @templates_path "templates/ruby"
 
+  @version "0.1.0"
+
   def run(_args) do
     generate_folder_structure
     generate_gemspec
@@ -21,6 +23,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.mkdir_p(@gen_path)
 
     File.mkdir(@lib_path)
+    File.mkdir("#{@lib_path}/#{@client_name}")
     File.mkdir(@bin_path)
 
     Mix.shell.info "--> Generate folder structure"
@@ -43,7 +46,15 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   end
 
   defp generate_lib do
+    opts = [module_name: Macro.camelize(@client_name), version: @version]
+    version = EEx.eval_file("#{@templates_path}/lib/version.rb.eex", opts)
 
+    File.write("#{@lib_path}/#{@client_name}/version.rb", version)
+
+    opts = [module_name: Macro.camelize(@client_name)]
+    gem_module = EEx.eval_file("#{@templates_path}/lib/gem_name.rb.eex", opts)
+
+    File.write("#{@lib_path}/#{@client_name}.rb", gem_module)
   end
 
   defp generate_bin do
