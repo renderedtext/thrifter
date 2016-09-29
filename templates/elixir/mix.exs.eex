@@ -1,8 +1,8 @@
-defmodule <%= prj_name %>.Mixfile do
+defmodule <%= project_name %>.Mixfile do
   use Mix.Project
 
   def project do
-    [app: <%= prj_name_atom %>,
+    [app: <%= project_name_atom %>,
      version: "<%= version %>",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
@@ -15,7 +15,7 @@ defmodule <%= prj_name %>.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger],
-     mod: {<%= prj_name %>, []}]
+     mod: {<%= project_name %>, []}]
   end
 
   defp deps do
