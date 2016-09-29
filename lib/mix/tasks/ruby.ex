@@ -9,6 +9,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @templates_path "templates/ruby"
 
   @version "0.1.0"
+  @thrift_dir "thrift"
 
   def run(_args) do
     generate_folder_structure
@@ -16,6 +17,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     generate_gemfile
     generate_lib
     generate_bin
+    generate_thrift_files
   end
 
   defp generate_folder_structure do
@@ -26,7 +28,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.mkdir("#{@lib_path}/#{@client_name}")
     File.mkdir(@bin_path)
 
-    Mix.shell.info "--> Generate folder structure"
+    Mix.shell.info "--> Generating folder structure"
   end
 
   defp generate_gemspec do
@@ -36,13 +38,13 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     File.write(gempsec_path, gemspec)
 
-    Mix.shell.info "--> Generate .gemspec"
+    Mix.shell.info "--> Generating .gemspec"
   end
 
   defp generate_gemfile do
     File.copy("#{@templates_path}/Gemfile", "#{@gen_path}/Gemfile")
 
-    Mix.shell.info "--> Generate Gemfile"
+    Mix.shell.info "--> Generating Gemfile"
   end
 
   defp generate_lib do
@@ -68,7 +70,34 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.write("#{@bin_path}/console", console)
     File.chmod("#{@bin_path}/console", 755)
 
-    Mix.shell.info "--> Generate bin folder"
+    Mix.shell.info "--> Generating bin folder"
+  end
+
+  defp generate_thrift_files do
+    {:ok, thrift_files} = File.ls(@thrift_dir)
+
+    File.rm_rf("temp/thrift")
+    File.mkdir_p("temp/thrift")
+
+    Mix.shell.info "--> Compiling thrift files"
+
+    for file <- thrift_files do
+      System.cmd("thrift", ["-r", "--gen", "rb", "-out", "temp/thrift", "#{@thrift_dir}/#{file}"])
+      Mix.shell.info "\t-- Compiling #{file}"
+    end
+
+    {:ok, ruby_files} = File.ls("temp/thrift")
+
+    for file <- ruby_files do
+      {:ok, data} = File.read("temp/thrift/#{file}")
+      File.write("#{@lib_path}/#{@client_name}/#{file}", data)
+
+      # Mix.shell.info "\t-- Copy #{file}"
+    end
+
+    File.rm_rf("temp")
+
+    Mix.shell.info "--> Compiled thrift files"
   end
 
   defp gempsec_path do
