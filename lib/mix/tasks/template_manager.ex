@@ -3,51 +3,51 @@ defmodule Thrifter.TemplateManager do
   @generated_path "generated/"
   def generated_path, do: @generated_path
 
-  def instantiate_templates(src_prj_name, gen_prj_name) do
+  def instantiate_templates(src_project_name, gen_project_name) do
     Mix.shell.cmd("echo; echo 'Instantiating templates...'")
-    instantiate_template_mix_exs(gen_prj_name)
-    instantiate_template_supervisor(src_prj_name, gen_prj_name)
-    instantiate_template_client(gen_prj_name)
+    instantiate_template_mix_exs(gen_project_name)
+    instantiate_template_supervisor(src_project_name, gen_project_name)
+    instantiate_template_client(gen_project_name)
   end
 
-  def instantiate_template_mix_exs(gen_prj_name) do
+  def instantiate_template_mix_exs(gen_project_name) do
     Mix.shell.cmd("echo; echo 'Instantiating template mix.exs ...'")
     template_name = "mix.exs"
-    replacements = replacements_mix_exs(gen_prj_name)
+    replacements = replacements_mix_exs(gen_project_name)
 
-    instantiate(template_name, replacements, [gen_prj_name, template_name])
+    instantiate(template_name, replacements, [gen_project_name, template_name])
   end
 
-  def replacements_mix_exs(gen_prj_name) do
-    prj_name_atom = gen_prj_name |> String.to_atom |> inspect
+  def replacements_mix_exs(gen_project_name) do
+    project_name_atom = gen_project_name |> String.to_atom |> inspect
     version = Mix.Project.config[:version]
-    [prj_name: Macro.camelize(gen_prj_name), prj_name_atom: prj_name_atom,
+    [project_name: Macro.camelize(gen_project_name), project_name_atom: project_name_atom,
       version: version]
   end
 
-  def instantiate_template_supervisor(src_prj_name, gen_prj_name) do
+  def instantiate_template_supervisor(src_project_name, gen_project_name) do
     Mix.shell.cmd("echo; echo 'Instantiating template supervisor ...'")
-    replacements = replacements_supervisor(src_prj_name, gen_prj_name)
+    replacements = replacements_supervisor(src_project_name, gen_project_name)
 
-    instantiate("supervisor.ex", replacements, [gen_prj_name, "lib", gen_prj_name <> ".ex"])
+    instantiate("supervisor.ex", replacements, [gen_project_name, "lib", gen_project_name <> ".ex"])
   end
 
-  def replacements_supervisor(src_prj_name, gen_prj_name) do
-    [prj_name: Macro.camelize(gen_prj_name),
-      server_host: (src_prj_name <> "_host") |> String.to_atom |> inspect,
-      server_port: (src_prj_name <> "_port") |> String.to_atom |> inspect]
+  def replacements_supervisor(src_project_name, gen_project_name) do
+    [project_name: Macro.camelize(gen_project_name),
+      server_host: (src_project_name <> "_host") |> String.to_atom |> inspect,
+      server_port: (src_project_name <> "_port") |> String.to_atom |> inspect]
   end
 
-  def instantiate_template_client(gen_prj_name) do
+  def instantiate_template_client(gen_project_name) do
     Mix.shell.cmd("echo; echo 'Instantiating template client.ex ...'")
     template_name = "client.ex"
-    replacements = replacements_client(gen_prj_name)
+    replacements = replacements_client(gen_project_name)
 
-    instantiate(template_name, replacements, [gen_prj_name, "lib", template_name])
+    instantiate(template_name, replacements, [gen_project_name, "lib", template_name])
   end
 
-  def replacements_client(gen_prj_name) do
-    [prj_name: Macro.camelize(gen_prj_name), function_names: inspect(function_names),
+  def replacements_client(gen_project_name) do
+    [project_name: Macro.camelize(gen_project_name), function_names: inspect(function_names),
       service_name: inspect(service_name |> String.to_atom)]
   end
 
