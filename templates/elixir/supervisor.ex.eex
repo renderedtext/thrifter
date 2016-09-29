@@ -1,36 +1,38 @@
 defmodule <%= prj_name %> do
   use Application
 
-  @connect_timeout 3000
+  defmodule Config do
+    def get(name) do
+      case Application.get_env(:<%= prj_name %>, name) do
+        {:system, variable_name} -> System.get_env(variable_name)
+        value                    -> value
+      end
+    end
+
+    def get_number(name) do
+      case get(name) do
+        nil   -> nil
+        value -> Intege.parse(value) |> elem(0)
+      end
+    end
+
+    def get!(name),        do: get(name) || raise "Parameter #{name} for <%= prj_name %> is not set"
+    def get_number!(name), do: get_number(name) || raise "Parameter #{name} for <%= prj_name %> is not set"
+  end
+
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
+    host    = Config.get!(:host)
+    port    = Config.get_number!(:port)
+    timeout = Config.get_number(:timeout) || 3000
+
     children = [
-      worker(<%= prj_name %>.Daemon, [host_port, @connect_timeout]),
+      worker(<%= prj_name %>.Client, [{host, port}, @connect_timeout]),
     ]
 
     opts = [strategy: :one_for_one, name: <%= prj_name %>.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-
-  defp host_port do
-    host = get_env(<%= server_host %>)
-    port = get_env(<%= server_port %>) |> String.to_integer
-    {host, port}
-  end
-
-  def get_env(key), do: key |> atom_to_upcase |> get_env_validate
-
-  def atom_to_upcase(atom), do: atom |> Atom.to_string |> String.upcase
-
-  defp get_env_validate(var), do: System.get_env(var) |> validate(var)
-
-  defp validate(value, name), do: value || not_set(name)
-
-  defp not_set(var) do
-    IO.puts "Environment variable #{var} not set!"
-    IO.puts "Exiting..."
-    System.halt(253)
-  end
 end
