@@ -70,7 +70,7 @@ defmodule Thrifter.TemplateManager do
   defp template_path(template_name) do
     project             = Mix.Project.config
     thrifter_dependancy = project[:deps][@thrifter_app_name] |> thrifter_dep
-    [thrifter_dependancy, "templates", template_name <> ".eex"] |> Path.join
+    [thrifter_dependancy, "templates", "elixir", template_name <> ".eex"] |> Path.join
   end
 
   def save_file(content, target), do:
