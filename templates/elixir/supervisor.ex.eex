@@ -1,9 +1,9 @@
-defmodule <%= prj_name %> do
+defmodule <%= project_name %> do
   use Application
 
   defmodule Config do
     def get(name) do
-      case Application.get_env(:<%= prj_name %>, name) do
+      case Application.get_env(:<%= project_name %>, name) do
         {:system, variable_name} -> System.get_env(variable_name)
         value                    -> value
       end
@@ -16,8 +16,8 @@ defmodule <%= prj_name %> do
       end
     end
 
-    def get!(name),        do: get(name) || raise "Parameter #{name} for <%= prj_name %> is not set"
-    def get_number!(name), do: get_number(name) || raise "Parameter #{name} for <%= prj_name %> is not set"
+    def get!(name),        do: get(name) || raise "Parameter #{name} for <%= project_name %> is not set"
+    def get_number!(name), do: get_number(name) || raise "Parameter #{name} for <%= project_name %> is not set"
   end
 
   def start(_type, _args) do
@@ -28,10 +28,10 @@ defmodule <%= prj_name %> do
     timeout = Config.get_number(:timeout) || 3000
 
     children = [
-      worker(<%= prj_name %>.Client, [{host, port}, @connect_timeout]),
+      worker(<%= project_name %>.Client, [{host, port}, @connect_timeout]),
     ]
 
-    opts = [strategy: :one_for_one, name: <%= prj_name %>.Supervisor]
+    opts = [strategy: :one_for_one, name: <%= project_name %>.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
