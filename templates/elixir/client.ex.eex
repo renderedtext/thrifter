@@ -1,4 +1,4 @@
-defmodule <%= prj_name %>.Daemon do
+defmodule <%= prj_name %>.Client do
   use Riffed.Client,
     auto_import_structs: true,
     service: <%= service_name %>,
@@ -7,7 +7,6 @@ defmodule <%= prj_name %>.Daemon do
       retries: 3,
       framed: true],
     import: <%= function_names %>
-
 
   def start_link({host, port}, timeout) do
     options = [name: __MODULE__, timeout: timeout]
