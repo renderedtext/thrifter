@@ -28,7 +28,7 @@ defmodule <%= project_name %> do
     timeout = Config.get_number(:timeout) || 3000
 
     children = [
-      worker(<%= project_name %>.Client, [{host, port}, @connect_timeout]),
+      worker(<%= project_name %>.Client, [{host, port}, timeout]),
     ]
 
     opts = [strategy: :one_for_one, name: <%= project_name %>.Supervisor]
