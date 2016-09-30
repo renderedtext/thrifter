@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @thrift_dir "thrift"
 
   def run(_args) do
-    Mix.shell.info "\nGenerating ruby client\n"
+    Mix.shell.info "\n--- Generating ruby client ---\n"
 
     File.rm_rf!("#{@gen_path}")
     File.mkdir_p!("#{@gen_path}")
@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     generate_thrift_files
 
-    Mix.shell.info "\nDone!\n"
+    Mix.shell.info "\nRuby client generated to #{IO.ANSI.green()}#{@gen_path} #{IO.ANSI.reset}\n"
   end
 
   defp render_templates(templates) do
@@ -30,30 +30,32 @@ defmodule Mix.Tasks.Thrifter.Ruby do
       version: @version
     ]
 
+    Mix.shell.info "Rendering templates:"
+
     Enum.each templates, fn template ->
       rendered = Thrifter.Templates.render(template, options)
 
-      replace_path(template) |> File.write!(rendered)
+      output_path(template) |> File.write!(rendered)
 
-      Mix.shell.info "-- Rendered #{IO.ANSI.green()} #{replace_path(template)} #{IO.ANSI.reset}"
+      Mix.shell.info " -#{IO.ANSI.green()} #{template} #{IO.ANSI.reset}"
     end
+
+    Mix.shell.info "\nRendering #{IO.ANSI.green()} successful #{IO.ANSI.reset}"
   end
 
   defp generate_thrift_files do
-    Mix.shell.info "\n-- Compiling #{IO.ANSI.red()} thrift #{IO.ANSI.reset()} files"
+    Mix.shell.info "\nCompiling #{IO.ANSI.red()} thrift #{IO.ANSI.reset()} files:"
 
-    {:ok, thrift_files} = File.ls(@thrift_dir)
-
-    Enum.each thrift_files, fn file ->
+    Enum.each(File.ls!(@thrift_dir), fn file ->
       System.cmd("thrift", ["-r", "--gen", "rb", "-out", "#{@gen_path}/lib/#{@client_name}", "#{@thrift_dir}/#{file}"])
 
-      Mix.shell.info "\t- Compiled #{IO.ANSI.green()} #{file} #{IO.ANSI.reset}"
-    end
+      Mix.shell.info " -#{IO.ANSI.green()} #{file} #{IO.ANSI.reset}"
+    end)
 
-    Mix.shell.info "-- Compiling done\n"
+    Mix.shell.info "\nCompiling #{IO.ANSI.green()} successful #{IO.ANSI.reset}"
   end
 
-  defp replace_path(file) do
+  defp output_path(file) do
     base = replace_file_name(file)
     dir  = Path.dirname(file) |> replace_dir_name
 
