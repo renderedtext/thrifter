@@ -1,8 +1,8 @@
 defmodule Mix.Tasks.Thrifter.Ruby do
   use Mix.Task
 
+  @client_name Mix.Project.config[:app] |> Atom.to_string
   @gen_path "gen/ruby-client"
-  @client_name "test_client"
   @templates_path "templates/ruby"
 
   @version Mix.Project.config[:version]
@@ -13,32 +13,29 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     File.mkdir_p!("#{@gen_path}")
 
-    process_dir(@templates_path)
+    compile_templates(@templates_path)
     generate_thrift_files
 
     Mix.shell.info "\nDone!\n"
   end
 
-  defp process_dir(path) do
+  defp compile_templates(path) do
     {:ok, files} = File.ls(path)
 
     Enum.each files, fn file ->
       file_path = "#{path}/#{file}"
 
       if File.dir?(file_path) do
-        File.mkdir("#{@gen_path}/#{file}")
-        process_dir(file_path)
+        replace_dir_name(file_path) |> File.mkdir
+
+        compile_templates(file_path)
       else
-        process_file(file_path)
+        process_template(file_path)
       end
     end
   end
 
-  defp process_file(path) do
-    dirname =
-      Path.relative_to(path, @templates_path)
-      |> Path.dirname
-
+  defp process_template(path) do
     opts = [
       filename: @client_name,
       gem_name: @client_name,
@@ -48,28 +45,15 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     eval = EEx.eval_file(path, opts)
 
-    File.write!("#{@gen_path}/#{dirname}/#{basename(path)}", eval)
+    replace_path(path) |> File.write!(eval)
 
-    Mix.shell.info "-- Generated #{IO.ANSI.green()} #{dirname}/#{basename(path)} #{IO.ANSI.reset}"
-  end
-
-  defp basename(path) do
-    base = Path.basename(path, ".eex")
-
-    case base do
-      ".gemspec"    -> "#{@client_name}.gemspec"
-      "gem_name.rb" -> "#{@client_name}.rb"
-      "version.rb"  -> "#{@client_name}/version.rb"
-      _             -> base
-    end
+    Mix.shell.info "-- Generated #{IO.ANSI.green()} #{replace_path(path)} #{IO.ANSI.reset}"
   end
 
   defp generate_thrift_files do
     Mix.shell.info "\n-- Compiling #{IO.ANSI.red()} thrift #{IO.ANSI.reset()} files"
 
     {:ok, thrift_files} = File.ls(@thrift_dir)
-
-    File.mkdir_p!("#{@gen_path}/lib/#{@client_name}")
 
     Enum.each thrift_files, fn file ->
       System.cmd("thrift", ["-r", "--gen", "rb", "-out", "#{@gen_path}/lib/#{@client_name}", "#{@thrift_dir}/#{file}"])
@@ -78,6 +62,32 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     end
 
     Mix.shell.info "-- Compiling done\n"
+  end
+
+  defp replace_path(file) do
+    base = replace_file_name(file)
+    dir  = Path.dirname(file) |> replace_dir_name
+
+    "#{dir}/#{base}"
+  end
+
+  defp replace_file_name(path) do
+    base = Path.basename(path, ".eex")
+
+    case base do
+      ".gemspec"    -> "#{@client_name}.gemspec"
+      "gem_name.rb" -> "#{@client_name}.rb"
+      _             -> base
+    end
+  end
+
+  defp replace_dir_name(path) do
+    out_path = String.replace(path, @templates_path, @gen_path)
+
+    case Path.basename(out_path) do
+      "gem_name" -> String.replace(out_path, "gem_name", @client_name)
+      _          -> out_path
+    end
   end
 
 end
