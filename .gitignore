@@ -1,5 +1,7 @@
 /_build
 /cover
 /deps
+/gen
+/thrift
 erl_crash.dump
 *.ez
