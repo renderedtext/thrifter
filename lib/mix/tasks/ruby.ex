@@ -12,69 +12,59 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @thrift_dir "thrift"
 
   def run(_args) do
-    Mix.shell.info "\n-- Generating ruby client\n"
+    Mix.shell.info "\nGenerating ruby client\n"
 
-    generate_folder_structure
-    generate_gemspec
-    generate_gemfile
-    generate_lib
-    generate_bin
-    generate_thrift_files
+    File.mkdir_p!("temp/template")
 
-    Mix.shell.info "-- \e[32mDone!\n"
+    process_dir(@templates_path)
+    # generate_thrift_files
+
+    # File.rm_rf!("temp/template")
+
+    Mix.shell.info "\nDone!\n"
   end
 
-  defp generate_folder_structure do
-    File.rm_rf(@gen_path)
-    File.mkdir_p(@gen_path)
+  defp process_dir(path) do
+    {:ok, files} = File.ls(path)
 
-    File.mkdir(@lib_path)
-    File.mkdir("#{@lib_path}/#{@client_name}")
-    File.mkdir(@bin_path)
+    Enum.each files, fn file ->
+      file_path = "#{path}/#{file}"
+
+      if File.dir?(file_path) do
+        File.mkdir("temp/template/#{file}")
+        process_dir(file_path)
+      else
+        process_file(file_path)
+      end
+    end
   end
 
-  defp generate_gemspec do
-    Mix.shell.info "--> Generating \e[32m.gemspec\e[0m"
+  defp process_file(path) do
+    dirname =
+      Path.relative_to(path, @templates_path)
+      |> Path.dirname
 
-    opts = [filename: @client_name, gem_name: @client_name, module_name: Macro.camelize(@client_name)]
+    opts = [
+      filename: @client_name,
+      gem_name: @client_name,
+      module_name: Macro.camelize(@client_name),
+      version: @version
+    ]
 
-    gemspec = EEx.eval_file("#{@templates_path}/template.gemspec.eex", opts)
+    eval = EEx.eval_file(path, opts)
 
-    File.write(gempsec_path, gemspec)
+    File.write!("temp/template/#{dirname}/#{basename(path)}", eval)
+
+    Mix.shell.info "-- Generated #{IO.ANSI.green()} #{dirname}/#{basename(path)} #{IO.ANSI.reset}"
   end
 
-  defp generate_gemfile do
-    Mix.shell.info "--> Generating \e[32mGemfile\e[0m"
+  defp basename(path) do
+    base = Path.basename(path, ".eex")
 
-    File.copy("#{@templates_path}/Gemfile", "#{@gen_path}/Gemfile")
-  end
-
-  defp generate_lib do
-    Mix.shell.info "--> Generating \e[32mlib\e[0m folder"
-
-    opts = [module_name: Macro.camelize(@client_name), version: @version]
-    version = EEx.eval_file("#{@templates_path}/lib/version.rb.eex", opts)
-
-    File.write("#{@lib_path}/#{@client_name}/version.rb", version)
-
-    opts = [module_name: Macro.camelize(@client_name)]
-    gem_module = EEx.eval_file("#{@templates_path}/lib/gem_name.rb.eex", opts)
-
-    File.write("#{@lib_path}/#{@client_name}.rb", gem_module)
-  end
-
-  defp generate_bin do
-    Mix.shell.info "--> Generating \e[32mbin\e[0m folder"
-
-    File.copy("#{@templates_path}/bin/setup", "#{@bin_path}/setup")
-    File.chmod("#{@bin_path}/setup", 755)
-
-    opts = [gem_name: @client_name]
-
-    console = EEx.eval_file("#{@templates_path}/bin/console.eex", opts)
-
-    File.write("#{@bin_path}/console", console)
-    File.chmod("#{@bin_path}/console", 755)
+    case Path.extname(base) do
+      ".gemspec" -> "#{@client_name}.gemspec"
+      _ -> base
+    end
   end
 
   defp generate_thrift_files do
@@ -99,10 +89,6 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     end
 
     File.rm_rf("temp")
-  end
-
-  defp gempsec_path do
-    "#{@gen_path}/#{@client_name}.gemspec"
   end
 
 end
