@@ -1,4 +1,5 @@
 defmodule Thrifter.Templates do
+  require EEx
 
   def template_files_for(lang) do
     template_files("templates/#{Atom.to_string(lang)}")

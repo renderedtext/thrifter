@@ -23,6 +23,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   end
 
   defp render_templates(templates) do
+    Mix.shell.info "Rendering templates:"
+
     options = [
       filename: @client_name,
       gem_name: @client_name,
@@ -30,15 +32,13 @@ defmodule Mix.Tasks.Thrifter.Ruby do
       version: @version
     ]
 
-    Mix.shell.info "Rendering templates:"
-
-    Enum.each templates, fn template ->
+    Enum.each(templates, fn template ->
       rendered = Thrifter.Templates.render(template, options)
 
       output_path(template) |> File.write!(rendered)
 
       Mix.shell.info " -#{IO.ANSI.green()} #{template} #{IO.ANSI.reset}"
-    end
+    end)
 
     Mix.shell.info "\nRendering #{IO.ANSI.green()} successful #{IO.ANSI.reset}"
   end
