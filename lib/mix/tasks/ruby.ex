@@ -11,6 +11,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   def run(_args) do
     Mix.shell.info "\nGenerating ruby client\n"
 
+    File.rm_rf!("#{@gen_path}")
     File.mkdir_p!("#{@gen_path}")
 
     compile_templates(@templates_path)
