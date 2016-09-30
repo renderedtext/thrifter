@@ -14,41 +14,29 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.rm_rf!("#{@gen_path}")
     File.mkdir_p!("#{@gen_path}")
 
-    compile_templates(@templates_path)
+    Thrifter.Templates.template_files_for(:ruby)
+    |> render_templates
+
     generate_thrift_files
 
     Mix.shell.info "\nDone!\n"
   end
 
-  defp compile_templates(path) do
-    {:ok, files} = File.ls(path)
-
-    Enum.each files, fn file ->
-      file_path = "#{path}/#{file}"
-
-      if File.dir?(file_path) do
-        replace_dir_name(file_path) |> File.mkdir
-
-        compile_templates(file_path)
-      else
-        process_template(file_path)
-      end
-    end
-  end
-
-  defp process_template(path) do
-    opts = [
+  defp render_templates(templates) do
+    options = [
       filename: @client_name,
       gem_name: @client_name,
       module_name: Macro.camelize(@client_name),
       version: @version
     ]
 
-    eval = EEx.eval_file(path, opts)
+    Enum.each templates, fn template ->
+      rendered = Thrifter.Templates.render(template, options)
 
-    replace_path(path) |> File.write!(eval)
+      replace_path(template) |> File.write!(rendered)
 
-    Mix.shell.info "-- Generated #{IO.ANSI.green()} #{replace_path(path)} #{IO.ANSI.reset}"
+      Mix.shell.info "-- Rendered #{IO.ANSI.green()} #{replace_path(template)} #{IO.ANSI.reset}"
+    end
   end
 
   defp generate_thrift_files do
@@ -68,6 +56,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   defp replace_path(file) do
     base = replace_file_name(file)
     dir  = Path.dirname(file) |> replace_dir_name
+
+    File.mkdir_p(dir)
 
     "#{dir}/#{base}"
   end
