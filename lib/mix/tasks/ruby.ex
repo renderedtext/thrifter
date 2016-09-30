@@ -56,9 +56,11 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   defp basename(path) do
     base = Path.basename(path, ".eex")
 
-    case Path.extname(base) do
-      ".gemspec" -> "#{@client_name}.gemspec"
-      _ -> base
+    case base do
+      ".gemspec"    -> "#{@client_name}.gemspec"
+      "gem_name.rb" -> "#{@client_name}.rb"
+      "version.rb"  -> "#{@client_name}/version.rb"
+      _             -> base
     end
   end
 
