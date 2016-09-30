@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @client_name "test_client"
   @templates_path "templates/ruby"
 
-  @version "0.1.0"
+  @version Mix.Project.config[:version]
   @thrift_dir "thrift"
 
   def run(_args) do
