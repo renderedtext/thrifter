@@ -3,9 +3,6 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
   @gen_path "gen/ruby-client"
   @client_name "test_client"
-
-  @lib_path "#{@gen_path}/lib"
-  @bin_path "#{@gen_path}/bin"
   @templates_path "templates/ruby"
 
   @version "0.1.0"
@@ -14,12 +11,10 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   def run(_args) do
     Mix.shell.info "\nGenerating ruby client\n"
 
-    File.mkdir_p!("temp/template")
+    File.mkdir_p!("#{@gen_path}")
 
     process_dir(@templates_path)
-    # generate_thrift_files
-
-    # File.rm_rf!("temp/template")
+    generate_thrift_files
 
     Mix.shell.info "\nDone!\n"
   end
@@ -31,7 +26,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
       file_path = "#{path}/#{file}"
 
       if File.dir?(file_path) do
-        File.mkdir("temp/template/#{file}")
+        File.mkdir("#{@gen_path}/#{file}")
         process_dir(file_path)
       else
         process_file(file_path)
@@ -53,7 +48,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     eval = EEx.eval_file(path, opts)
 
-    File.write!("temp/template/#{dirname}/#{basename(path)}", eval)
+    File.write!("#{@gen_path}/#{dirname}/#{basename(path)}", eval)
 
     Mix.shell.info "-- Generated #{IO.ANSI.green()} #{dirname}/#{basename(path)} #{IO.ANSI.reset}"
   end
@@ -68,27 +63,19 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   end
 
   defp generate_thrift_files do
-    Mix.shell.info "--> Compiling \e[32mthrift\e[0m files"
+    Mix.shell.info "\n-- Compiling #{IO.ANSI.red()} thrift #{IO.ANSI.reset()} files"
 
     {:ok, thrift_files} = File.ls(@thrift_dir)
 
-    File.rm_rf("temp/thrift")
-    File.mkdir_p("temp/thrift")
+    File.mkdir_p!("#{@gen_path}/lib/#{@client_name}")
 
-    for file <- thrift_files do
-      System.cmd("thrift", ["-r", "--gen", "rb", "-out", "temp/thrift", "#{@thrift_dir}/#{file}"])
+    Enum.each thrift_files, fn file ->
+      System.cmd("thrift", ["-r", "--gen", "rb", "-out", "#{@gen_path}/lib/#{@client_name}", "#{@thrift_dir}/#{file}"])
 
-      Mix.shell.info "\t- Compiling \e[33m#{file}\e[0m"
+      Mix.shell.info "\t- Compiled #{IO.ANSI.green()} #{file} #{IO.ANSI.reset}"
     end
 
-    {:ok, ruby_files} = File.ls("temp/thrift")
-
-    for file <- ruby_files do
-      {:ok, data} = File.read("temp/thrift/#{file}")
-      File.write("#{@lib_path}/#{@client_name}/#{file}", data)
-    end
-
-    File.rm_rf("temp")
+    Mix.shell.info "-- Compiling done\n"
   end
 
 end
