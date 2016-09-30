@@ -12,12 +12,16 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   @thrift_dir "thrift"
 
   def run(_args) do
+    Mix.shell.info "\n-- Generating ruby client\n"
+
     generate_folder_structure
     generate_gemspec
     generate_gemfile
     generate_lib
     generate_bin
     generate_thrift_files
+
+    Mix.shell.info "-- \e[32mDone!\n"
   end
 
   defp generate_folder_structure do
@@ -27,27 +31,27 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.mkdir(@lib_path)
     File.mkdir("#{@lib_path}/#{@client_name}")
     File.mkdir(@bin_path)
-
-    Mix.shell.info "--> Generating folder structure"
   end
 
   defp generate_gemspec do
+    Mix.shell.info "--> Generating \e[32m.gemspec\e[0m"
+
     opts = [filename: @client_name, gem_name: @client_name, module_name: Macro.camelize(@client_name)]
 
     gemspec = EEx.eval_file("#{@templates_path}/template.gemspec.eex", opts)
 
     File.write(gempsec_path, gemspec)
-
-    Mix.shell.info "--> Generating .gemspec"
   end
 
   defp generate_gemfile do
-    File.copy("#{@templates_path}/Gemfile", "#{@gen_path}/Gemfile")
+    Mix.shell.info "--> Generating \e[32mGemfile\e[0m"
 
-    Mix.shell.info "--> Generating Gemfile"
+    File.copy("#{@templates_path}/Gemfile", "#{@gen_path}/Gemfile")
   end
 
   defp generate_lib do
+    Mix.shell.info "--> Generating \e[32mlib\e[0m folder"
+
     opts = [module_name: Macro.camelize(@client_name), version: @version]
     version = EEx.eval_file("#{@templates_path}/lib/version.rb.eex", opts)
 
@@ -60,6 +64,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   end
 
   defp generate_bin do
+    Mix.shell.info "--> Generating \e[32mbin\e[0m folder"
+
     File.copy("#{@templates_path}/bin/setup", "#{@bin_path}/setup")
     File.chmod("#{@bin_path}/setup", 755)
 
@@ -69,21 +75,20 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
     File.write("#{@bin_path}/console", console)
     File.chmod("#{@bin_path}/console", 755)
-
-    Mix.shell.info "--> Generating bin folder"
   end
 
   defp generate_thrift_files do
+    Mix.shell.info "--> Compiling \e[32mthrift\e[0m files"
+
     {:ok, thrift_files} = File.ls(@thrift_dir)
 
     File.rm_rf("temp/thrift")
     File.mkdir_p("temp/thrift")
 
-    Mix.shell.info "--> Compiling thrift files"
-
     for file <- thrift_files do
       System.cmd("thrift", ["-r", "--gen", "rb", "-out", "temp/thrift", "#{@thrift_dir}/#{file}"])
-      Mix.shell.info "\t-- Compiling #{file}"
+
+      Mix.shell.info "\t- Compiling \e[33m#{file}\e[0m"
     end
 
     {:ok, ruby_files} = File.ls("temp/thrift")
@@ -91,13 +96,9 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     for file <- ruby_files do
       {:ok, data} = File.read("temp/thrift/#{file}")
       File.write("#{@lib_path}/#{@client_name}/#{file}", data)
-
-      # Mix.shell.info "\t-- Copy #{file}"
     end
 
     File.rm_rf("temp")
-
-    Mix.shell.info "--> Compiled thrift files"
   end
 
   defp gempsec_path do
