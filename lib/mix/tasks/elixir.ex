@@ -12,13 +12,14 @@ defmodule Mix.Tasks.Thrifter.Elixir do
   def client_name, do: Mix.Project.config[:app] |> Atom.to_string
 
   def run(_) do
-    Mix.shell.info "--- Generating elixir client ---"
+    Mix.shell.info "Generating elixir client"
+    Mix.shell.info "------------------------"
 
     Directory.clean(client_dir)
     Thrift.generate(output: thrift_output_dir, language: "erl")
     generate_elixir_files
 
-    Mix.shell.info "\Elixir client generated in #{Colors.green(client_dir)}\n"
+    Mix.shell.info "\nElixir client generated in #{Colors.green(client_dir)}\n"
   end
 
   defp generate_elixir_files do
