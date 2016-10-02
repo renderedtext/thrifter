@@ -4,7 +4,9 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   alias Thrifter.Thrift
   alias Thrifter.Colors
 
-  def run(_args) do
+  @shortdoc "Generate Thrift Ruby client"
+
+  def run(_) do
     Mix.shell.info "\n--- Generating ruby client ---\n"
 
     clean_output_dir
