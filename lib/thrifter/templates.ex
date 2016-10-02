@@ -1,9 +1,10 @@
 defmodule Thrifter.Templates do
   require EEx
 
-  def template_files_for(lang) do
-    template_files("templates/#{Atom.to_string(lang)}")
-  end
+  @templates_dir "templates"
+
+  def template_files_for(:ruby),   do: template_files("#{@templates_dir}/ruby")
+  def template_files_for(:elixir), do: template_files("#{@templates_dir}/elixir")
 
   def render(templates_path, options) do
     EEx.eval_file(templates_path, options)
