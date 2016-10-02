@@ -2,6 +2,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   use Mix.Task
   alias Thrifter.Templates
   alias Thrifter.Thrift
+  alias Thrifter.Colors
 
   def run(_args) do
     Mix.shell.info "\n--- Generating ruby client ---\n"
@@ -10,7 +11,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     generate_ruby_files
     generate_thrift_files
 
-    Mix.shell.info "\nRuby client generated in #{green(client_dir)}\n"
+    Mix.shell.info "\nRuby client generated in #{Colors.green(client_dir)}\n"
   end
 
   defp client_dir do
@@ -42,7 +43,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     Mix.shell.info "\nRendering ruby files:\n"
 
     Enum.zip(template_file_paths, output_file_paths) |> Enum.each fn {template, output} ->
-      Mix.shell.info " - #{green(output)}"
+      Mix.shell.info " - #{Colors.green(output)}"
 
       Path.dirname(output) |> File.mkdir_p!
 
@@ -53,10 +54,6 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   def generate_thrift_files do
     Mix.shell.info "\nCompiling thrift client\n"
     Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
-  end
-
-  defp green(text) do
-    "#{IO.ANSI.green}#{text}#{IO.ANSI.reset}"
   end
 
 end
