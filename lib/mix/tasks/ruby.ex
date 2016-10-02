@@ -41,6 +41,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     output_file_paths   = template_file_paths
                           |> Enum.map(&String.replace(&1, "GEM_NAME", client_name))
                           |> Enum.map(&String.replace(&1, "templates/ruby", client_dir))
+                          |> Enum.map(&String.replace(&1, ".eex", ""))
 
     Mix.shell.info "\nRendering ruby files:\n"
 
