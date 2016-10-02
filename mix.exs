@@ -17,6 +17,7 @@ defmodule Thrifter.Mixfile do
   defp deps do
     [
       {:riffed, github: "renderedtext/riffed", ref: "origin/master"},
+      {:ex_spec, "~> 1.0", only: :test}
     ]
   end
 end

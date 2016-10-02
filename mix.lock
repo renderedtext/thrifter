@@ -1,4 +1,5 @@
-%{"exlager": {:git, "https://github.com/khia/exlager.git", "78d4ebedf4ea1e31ad2aa202632172a4f775efa8", []},
+%{"ex_spec": {:hex, :ex_spec, "1.1.0", "2acab65bec77bb131b23e3d026d35634abc5e5e24dbec07689b62f861030a883", [:mix], []},
+  "exlager": {:git, "https://github.com/khia/exlager.git", "78d4ebedf4ea1e31ad2aa202632172a4f775efa8", []},
   "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "212299233c7e7eb63a97be2777e1c05ebaa58dbe", [tag: "0.1.8"]},
   "lager": {:git, "https://github.com/basho/lager.git", "bce5504a955e52be8d5cf4b3c6b1fcd898ab5756", []},
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
