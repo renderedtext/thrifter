@@ -3,43 +3,56 @@ defmodule Mix.Tasks.Thrifter.Elixir do
 
   @shortdoc "Generate Thrift Elixir client"
 
-
   def run(_) do
-    {src_project_name, gen_project_name} = generate_project()
-    compile_thrift(gen_project_name)
-    Thrifter.TemplateManager.instantiate_templates(src_project_name, gen_project_name)
-    compile_elixir(gen_project_name)
+    Mix.shell.info "\n--- Generating elixir client ---\n"
+
+    clean_output_dir
+    generate_elixir_files
+    generate_thrift_files
+
+    Mix.shell.info "\Elixir client generated in #{Colors.green(client_dir)}\n"
   end
 
-  @project_suffix "_generated_client"
-  def generate_project() do
-    print_and_exec("rm -fr #{generated_path}")
-    print_and_exec("mkdir  #{generated_path}")
-
-    project        = Mix.Project.config
-    src_project_name   = Keyword.get(project, :app) |> Atom.to_string
-    gen_project_name   = src_project_name <> @project_suffix
-
-    print_and_exec("cd #{generated_path}; mix new #{gen_project_name} --sup")
-
-    {src_project_name, gen_project_name}
+  defp client_dir do
+    "gen/elixir-client"
   end
 
-  def compile_thrift(gen_project_name) do
-    print_and_exec("rm -fr src")
-    print_and_exec("mix compile.thrift")
-    print_and_exec("cp -r src #{generated_path}/#{gen_project_name}/")
+  defp client_name do
+    Mix.Project.config[:app] |> Atom.to_string
   end
 
-  def compile_elixir(gen_project_name) do
-    gen_project_path = "#{generated_path}/#{gen_project_name}"
-    print_and_exec("cd #{gen_project_path}; MIX_ENV=prod mix do deps.get, compile")
+  defp clean_output_dir do
+    File.rm_rf!(client_dir)
+    File.mkdir_p!(client_dir)
   end
 
-  def print_and_exec(cmd) do
-    Mix.shell.cmd("echo; echo '$ #{cmd}'")
-    Mix.shell.cmd(cmd)
+  defp generate_elixir_files do
+    options = [
+      client_name: client_name,
+      client_module_name: Macro.camelize(client_name),
+      service_name:
+      version: Mix.Project.config[:version]
+    ]
+
+    template_file_paths = Templates.template_files_for(:ruby)
+    output_file_paths   = template_file_paths
+                          |> Enum.map(&String.replace(&1, "CLIENT_NAME", client_name))
+                          |> Enum.map(&String.replace(&1, "templates/elixir", client_dir))
+
+    Mix.shell.info "\nRendering elixir files:\n"
+
+    Enum.zip(template_file_paths, output_file_paths) |> Enum.each fn {template, output} ->
+      Mix.shell.info " - #{Colors.green(output)}"
+
+      Path.dirname(output) |> File.mkdir_p!
+
+      File.write! output, Templates.render(template, options)
+    end
   end
 
-  def generated_path, do: Thrifter.TemplateManager.generated_path
+  def generate_thrift_files do
+    Mix.shell.info "\nCompiling thrift client\n"
+    Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
+  end
+
 end

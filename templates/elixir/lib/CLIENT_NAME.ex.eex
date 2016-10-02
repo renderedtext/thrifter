@@ -1,0 +1,21 @@
+defmodule <%= client_module_name %> do
+  use Application
+
+  alias <%= client_module_name %>.Config
+
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    host    = Config.get!(:host)
+    port    = Config.get_number!(:port)
+    timeout = Config.get_number(:timeout) || 3000
+
+    children = [
+      worker(<%= project_name %>.Client, [{host, port}, timeout]),
+    ]
+
+    opts = [strategy: :one_for_one, name: <%= client_module_name %>.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+end

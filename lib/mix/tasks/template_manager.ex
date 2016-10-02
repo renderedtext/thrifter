@@ -51,15 +51,6 @@ defmodule Thrifter.TemplateManager do
       service_name: inspect(service_name |> String.to_atom)]
   end
 
-  def function_names do
-    "cd src ; grep function_info *erl | grep \\(\\' | cut -d\\' -f2 | sort -u"
-    |> os_cmd |> String.split |> Enum.map(fn f -> String.to_atom(f) end)
-  end
-
-  def service_name do
-    "cd src ; grep function_info *erl | head -1 | cut -f1 -d."
-    |> os_cmd |> String.strip(?\n)
-  end
 
   def os_cmd(cmd), do: cmd |> to_char_list |> :os.cmd |> List.to_string
 
