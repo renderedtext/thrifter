@@ -1,4 +1,4 @@
-defmodule <%= client_name %>.Mixfile do
+defmodule <%= client_module_name %>.Mixfile do
   use Mix.Project
 
   def project do

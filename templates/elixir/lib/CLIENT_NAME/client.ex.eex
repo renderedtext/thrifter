@@ -6,7 +6,7 @@ defmodule <%= client_module_name %>.Client do
     client_opts: [
       retries: 3,
       framed: true],
-    import: <%= function_names %>
+    import: <%= inspect(function_names) %>
 
   def start_link({host, port}, timeout) do
     options = [name: __MODULE__, timeout: timeout]

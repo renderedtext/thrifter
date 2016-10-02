@@ -15,16 +15,4 @@ defmodule Thrifter.Thrift do
     end
   end
 
-  defmodule RiffedHelpers do
-    defp function_names(erlang_source_directory) do
-      "cd #{erlang_source_directory} ; grep function_info *erl | grep \\(\\' | cut -d\\' -f2 | sort -u"
-      |> os_cmd |> String.split |> Enum.map(fn f -> String.to_atom(f) end)
-    end
-
-    defp service_name(erlang_source_directory) do
-      "cd #{erlang_source_directory} ; grep function_info *erl | head -1 | cut -f1 -d."
-      |> os_cmd |> String.strip(?\n)
-    end
-  end
-
 end

@@ -10,8 +10,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     Mix.shell.info "\n--- Generating ruby client ---\n"
 
     clean_output_dir
-    generate_ruby_files
     generate_thrift_files
+    generate_ruby_files
 
     Mix.shell.info "\nRuby client generated in #{Colors.green(client_dir)}\n"
   end

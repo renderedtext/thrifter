@@ -1,6 +1,6 @@
 defmodule <%= client_module_name %>.Config do
   def get(name) do
-    case Application.get_env(:<%= project_name %>, name) do
+    case Application.get_env(:<%= client_name %>, name) do
       {:system, variable_name} -> System.get_env(variable_name)
       value                    -> value
     end
@@ -14,10 +14,10 @@ defmodule <%= client_module_name %>.Config do
   end
 
   def get!(name) do
-    get(name) || raise "Parameter #{name} for <%= project_name %> is not set"
+    get(name) || raise "Parameter #{name} for <%= client_name %> is not set"
   end
 
   def get_number!(name) do
-    get_number(name) || raise "Parameter #{name} for <%= project_name %> is not set"
+    get_number(name) || raise "Parameter #{name} for <%= client_name %> is not set"
   end
 end
