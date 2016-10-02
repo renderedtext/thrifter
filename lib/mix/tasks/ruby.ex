@@ -11,7 +11,8 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   def client_name, do: Mix.Project.config[:app] |> Atom.to_string
 
   def run(_) do
-    Mix.shell.info "--- Generating ruby client ---"
+    Mix.shell.info "Generating ruby client"
+    Mix.shell.info "----------------------"
 
     Directory.clean(client_dir)
     Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
