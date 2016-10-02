@@ -11,3 +11,21 @@ def deps do
   ]
 end
 ```
+
+### Generate Ruby client
+
+``` bash
+mix thrifter.ruby
+```
+
+### Generate Elixir client
+
+``` bash
+mix thrifter.elixir
+```
+
+### Generate all clients
+
+``` bash
+mix thrifter.all
+```
