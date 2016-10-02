@@ -1,5 +1,5 @@
-defmodule Thrift do
-  alias Thrift.Directory
+defmodule Thrifter.Thrift do
+  alias Thrifter.Directory
 
   @thrift_dir "thrift"
 
