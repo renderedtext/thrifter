@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
   end
 
   defp generate_ruby_files do
-    options = [
+    template_variables = [
       gem_name: client_name,
       module_name: Macro.camelize(client_name),
       version: Mix.Project.config[:version]
@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     template_paths = Templates.template_files_for(:ruby)
     output_paths   = output_file_paths(template_paths)
 
-    Templates.render(template_paths, output_paths, options)
+    Templates.render(template_paths, output_paths, template_variables)
   end
 
   def output_file_paths(template_file_paths) do

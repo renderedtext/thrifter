@@ -23,7 +23,7 @@ defmodule Mix.Tasks.Thrifter.Elixir do
   end
 
   defp generate_elixir_files do
-    options = [
+    template_variables = [
       client_name: client_name,
       client_module_name: Macro.camelize(client_name),
       service_name: Thrift.Erlang.service_name(thrift_output_dir),
@@ -35,7 +35,7 @@ defmodule Mix.Tasks.Thrifter.Elixir do
     template_paths = Templates.template_files_for(:elixir)
     output_paths   = output_file_paths(template_paths)
 
-    Templates.render(template_paths, output_paths, options)
+    Templates.render(template_paths, output_paths, template_variables)
   end
 
   def output_file_paths(template_file_paths) do
