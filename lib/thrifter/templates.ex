@@ -11,4 +11,8 @@ defmodule Thrifter.Templates do
     EEx.eval_file(templates_path, options)
   end
 
+  def render_all(template_file_paths, options) do
+    template_file_paths |> Enum.map(&render(&1, options))
+  end
+
 end

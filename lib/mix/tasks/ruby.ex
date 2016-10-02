@@ -14,17 +14,6 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     File.rm_rf!("#{@gen_path}")
     File.mkdir_p!("#{@gen_path}")
 
-    Thrifter.Templates.template_files_for(:ruby)
-    |> render_templates
-
-    generate_thrift_files
-
-    Mix.shell.info "\nRuby client generated to #{IO.ANSI.green()}#{@gen_path} #{IO.ANSI.reset}\n"
-  end
-
-  defp render_templates(templates) do
-    Mix.shell.info "Rendering templates:"
-
     options = [
       filename: @client_name,
       gem_name: @client_name,
@@ -32,12 +21,23 @@ defmodule Mix.Tasks.Thrifter.Ruby do
       version: @version
     ]
 
+    template_files = Thrifter.Templates.template_files_for(:ruby)
+
+    render_templates(template_files, options)
+    generate_thrift_files
+
+    Mix.shell.info "\nRuby client generated to #{IO.ANSI.green()}#{@gen_path} #{IO.ANSI.reset}\n"
+  end
+
+  defp render_templates(templates, options) do
+    Mix.shell.info "Rendering templates:"
+
     Enum.each(templates, fn template ->
       rendered = Thrifter.Templates.render(template, options)
 
       output_path(template) |> File.write!(rendered)
 
-      Mix.shell.info " -#{IO.ANSI.green()} #{template} #{IO.ANSI.reset}"
+      Mix.shell.info " -#{IO.ANSI.green} #{template} #{IO.ANSI.reset}"
     end)
 
     Mix.shell.info "\nRendering #{IO.ANSI.green()} successful #{IO.ANSI.reset}"
