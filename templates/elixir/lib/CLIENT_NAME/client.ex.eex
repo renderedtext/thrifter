@@ -1,12 +1,12 @@
-defmodule <%= project_name %>.Client do
+defmodule <%= client_module_name %>.Client do
   use Riffed.Client,
     auto_import_structs: true,
     service: <%= service_name %>,
-    structs: <%= project_name %>.Model,
+    structs: <%= client_module_name %>.Models,
     client_opts: [
       retries: 3,
       framed: true],
-    import: <%= function_names %>
+    import: <%= inspect(function_names) %>
 
   def start_link({host, port}, timeout) do
     options = [name: __MODULE__, timeout: timeout]

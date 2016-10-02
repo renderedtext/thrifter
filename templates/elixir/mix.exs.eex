@@ -1,21 +1,20 @@
-defmodule <%= project_name %>.Mixfile do
+defmodule <%= client_module_name %>.Mixfile do
   use Mix.Project
 
   def project do
-    [app: <%= project_name_atom %>,
+    [app: <%= client_name %>,
      version: "<%= version %>",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     compilers: [:thrift | Mix.compilers],
+     thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger],
-     mod: {<%= project_name %>, []}]
+     mod: {<%= client_module_name %>, []}]
   end
 
   defp deps do
