@@ -20,20 +20,20 @@ defmodule Thrifter.Thrift do
   end
 
   defmodule Erlang do
-    defp function_names(erlang_source_path) do
+    def function_names(erlang_source_path) do
       "cd #{erlang_source_path}; grep function_info *erl | grep \\(\\' | cut -d\\' -f2 | sort -u"
       |> os_cmd
       |> String.split
       |> Enum.map(&String.to_atom/1)
     end
 
-    defp service_name(erlang_source_path) do
+    def service_name(erlang_source_path) do
       "cd #{erlang_source_path}/src; grep function_info *erl | head -1 | cut -f1 -d."
       |> os_cmd
       |> String.strip(?\n)
     end
 
-    defp structs(erlang_source_path) do
+    def structs(erlang_source_path) do
       "cd #{erlang_source_path}/src; grep \"struct_info('\" *_types.erl | awk -F \"'\" '{ print $2 }'"
       |> os_cmd
       |> String.split

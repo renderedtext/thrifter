@@ -17,4 +17,10 @@ defmodule Thrifter.Directory do
     end
   end
 
+  # clean content of directory
+  def clean(path) do
+    File.rm_rf!(path)
+    File.mkdir_p!(path)
+  end
+
 end

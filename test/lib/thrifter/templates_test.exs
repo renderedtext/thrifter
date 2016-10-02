@@ -19,12 +19,4 @@ defmodule Thrifter.TemplatesTest do
     end
   end
 
-  describe ".render" do
-    it "renders the template with the passed values" do
-      result = Templates.render("templates/ruby/Gemfile.eex", smoething: 1)
-
-      assert result =~ ~r/source .https:\/\/rubygems.org./
-    end
-  end
-
 end
