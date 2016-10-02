@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Thrifter.Ruby do
     Mix.shell.info "\n--- Generating ruby client ---\n"
 
     clean_output_dir
-    generate_thrift_files
+    Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
     generate_ruby_files
 
     Mix.shell.info "\nRuby client generated in #{Colors.green(client_dir)}\n"
@@ -52,11 +52,6 @@ defmodule Mix.Tasks.Thrifter.Ruby do
 
       File.write! output, Templates.render(template, options)
     end
-  end
-
-  def generate_thrift_files do
-    Mix.shell.info "\nCompiling thrift client\n"
-    Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
   end
 
 end
