@@ -1,5 +1,8 @@
 defmodule Mix.Tasks.Thrifter.Elixir do
   use Mix.Task
+  alias Thrifter.Templates
+  alias Thrifter.Thrift
+  alias Thrifter.Colors
 
   @shortdoc "Generate Thrift Elixir client"
 
@@ -7,8 +10,8 @@ defmodule Mix.Tasks.Thrifter.Elixir do
     Mix.shell.info "\n--- Generating elixir client ---\n"
 
     clean_output_dir
-    generate_elixir_files
     generate_thrift_files
+    generate_elixir_files
 
     Mix.shell.info "\Elixir client generated in #{Colors.green(client_dir)}\n"
   end
@@ -30,11 +33,10 @@ defmodule Mix.Tasks.Thrifter.Elixir do
     options = [
       client_name: client_name,
       client_module_name: Macro.camelize(client_name),
-      service_name:
       version: Mix.Project.config[:version]
     ]
 
-    template_file_paths = Templates.template_files_for(:ruby)
+    template_file_paths = Templates.template_files_for(:elixir)
     output_file_paths   = template_file_paths
                           |> Enum.map(&String.replace(&1, "CLIENT_NAME", client_name))
                           |> Enum.map(&String.replace(&1, "templates/elixir", client_dir))
@@ -52,7 +54,11 @@ defmodule Mix.Tasks.Thrifter.Elixir do
 
   def generate_thrift_files do
     Mix.shell.info "\nCompiling thrift client\n"
-    Thrift.generate(output: "#{client_dir}/lib/#{client_name}", language: "rb")
+
+    output = "#{client_dir}/src"
+    File.mkdir_p!(output)
+
+    Thrift.generate(output: output, language: "erl")
   end
 
 end
