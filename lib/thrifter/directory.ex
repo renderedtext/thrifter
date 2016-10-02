@@ -7,10 +7,13 @@ defmodule Thrifter.Directory do
 
   # List files recursevly in a directory
   def ls_r(path) do
-    if File.dir?(path) do
-      ls(path) |> Enum.map(&ls_r/1) |> Enum.concat
-    else
-      [path]
+    cond do
+      File.dir?(path) ->
+        ls(path) |> Enum.map(&ls_r/1) |> Enum.concat
+      File.regular?(path) ->
+        [path]
+      true ->
+        raise "Path does not exists"
     end
   end
 
