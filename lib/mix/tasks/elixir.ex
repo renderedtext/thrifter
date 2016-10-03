@@ -40,7 +40,7 @@ defmodule Mix.Tasks.Thrifter.Elixir do
 
   def output_file_paths(template_file_paths) do
     template_file_paths
-    |> Enum.map(&String.replace(&1, "templates/elixir", client_dir))
+    |> Enum.map(&String.replace(&1, Templates.templates_dir(:elixir), client_dir))
     |> Enum.map(&String.replace(&1, ".eex", ""))
     |> Enum.map(&String.replace(&1, "CLIENT_NAME", client_name))
   end
