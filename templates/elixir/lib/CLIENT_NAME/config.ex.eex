@@ -9,7 +9,7 @@ defmodule <%= client_module_name %>.Config do
   def get_number(name) do
     case get(name) do
       nil   -> nil
-      value -> Intege.parse(value) |> elem(0)
+      value -> Integer.parse(value) |> elem(0)
     end
   end
 
