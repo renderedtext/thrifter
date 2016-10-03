@@ -1,5 +1,16 @@
 defmodule <%= client_module_name %>.Config do
-  def get(name) do
+  def get(name), do: name |> env_var_name |> System.get_env |> get_dispatch(name)
+
+  defp env_var_name(name), do:
+    env_var_name_(name) |> Macro.underscore |> String.upcase
+
+  defp env_var_name_(name), do:
+    "<%= client_module_name %>#{name |> Atom.to_string |> String.upcase}"
+
+  defp get_dispatch(nil, name), do: get_app_env(name)
+  defp get_dispatch(value, _), do: value
+
+  def get_app_env(name) do
     case Application.get_env(:<%= client_name %>, name) do
       {:system, variable_name} -> System.get_env(variable_name)
       value                    -> value
@@ -14,10 +25,13 @@ defmodule <%= client_module_name %>.Config do
   end
 
   def get!(name) do
-    get(name) || raise "Parameter #{name} for <%= client_name %> is not set"
+    get(name) || raise message(name)
   end
 
   def get_number!(name) do
-    get_number(name) || raise "Parameter #{name} for <%= client_name %> is not set"
+    get_number(name) || raise message(name)
   end
+
+  defp message(name), do:
+    "Parameter #{name} or env. var. #{env_var_name(name)} for <%= client_name %> is not set"
 end
