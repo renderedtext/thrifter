@@ -2,7 +2,7 @@ defmodule <%= client_module_name %>.Mixfile do
   use Mix.Project
 
   def project do
-    [app: <%= client_name %>,
+    [app: <%= client_name_atom %>,
      version: "<%= version %>",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,

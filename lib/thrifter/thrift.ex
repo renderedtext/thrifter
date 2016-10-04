@@ -28,13 +28,13 @@ defmodule Thrifter.Thrift do
     end
 
     def service_name(erlang_source_path) do
-      "cd #{erlang_source_path}/src; grep function_info *erl | head -1 | cut -f1 -d."
+      "cd #{erlang_source_path}; grep function_info *erl | head -1 | cut -f1 -d."
       |> os_cmd
       |> String.strip(?\n)
     end
 
     def structs(erlang_source_path) do
-      "cd #{erlang_source_path}/src; grep \"struct_info('\" *_types.erl | awk -F \"'\" '{ print $2 }'"
+      "cd #{erlang_source_path}; grep \"struct_info('\" *_types.erl | awk -F \"'\" '{ print $2 }'"
       |> os_cmd
       |> String.split
     end

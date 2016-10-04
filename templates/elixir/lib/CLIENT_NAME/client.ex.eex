@@ -8,8 +8,8 @@ defmodule <%= client_module_name %>.Client do
       framed: true],
     import: <%= inspect(function_names) %>
 
-  def start_link({host, port}, timeout) do
-    options = [name: __MODULE__, timeout: timeout]
+  def start_link({host, port}, connection_timeout) do
+    options = [name: __MODULE__, timeout: connection_timeout]
     GenServer.start_link(__MODULE__, {host, port}, options)
   end
 end

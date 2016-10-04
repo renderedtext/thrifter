@@ -25,8 +25,9 @@ defmodule Mix.Tasks.Thrifter.Elixir do
   defp generate_elixir_files do
     template_variables = [
       client_name: client_name,
+      client_name_atom: client_name |> eex_atom,
       client_module_name: Macro.camelize(client_name),
-      service_name: Thrift.Erlang.service_name(thrift_output_dir),
+      service_name: Thrift.Erlang.service_name(thrift_output_dir) |> eex_atom,
       function_names: Thrift.Erlang.function_names(thrift_output_dir),
       structs: Thrift.Erlang.structs(thrift_output_dir),
       version: Mix.Project.config[:version]
@@ -38,9 +39,11 @@ defmodule Mix.Tasks.Thrifter.Elixir do
     Templates.render(template_paths, output_paths, template_variables)
   end
 
+  defp eex_atom(string), do: string |> String.to_atom |> inspect
+
   def output_file_paths(template_file_paths) do
     template_file_paths
-    |> Enum.map(&String.replace(&1, "templates/elixir", client_dir))
+    |> Enum.map(&String.replace(&1, Templates.templates_dir(:elixir), client_dir))
     |> Enum.map(&String.replace(&1, ".eex", ""))
     |> Enum.map(&String.replace(&1, "CLIENT_NAME", client_name))
   end
