@@ -2,14 +2,15 @@ defmodule Thrifter.GitRepo do
   alias Thrifter.Colors
 
   @debug false
-  @generated_repo_private? false
+  @generated_repo_private? true
 
   defp repo_user, do: System.get_env("REPO_USER")
   defp repo_pass, do: System.get_env("REPO_PASS")
+  defp org_id, do: System.get_env("ORG_ID")
 
   def init(package_name, client_dir) do
     pushd(client_dir,
-      "\nInitializing repozitory #{Colors.green(package_name)}",
+      "\nInitializing repository #{Colors.green(package_name)}",
       fn -> package_name |> create_remote |> init_local(package_name) end)
   end
 
@@ -39,10 +40,9 @@ defmodule Thrifter.GitRepo do
   end
 
   defp create_remote(package_name) do
-    args = ~w(-s --user #{repo_user}:#{repo_pass}
-      -X POST -H "Content-Type: application/json" -d) ++
-      ['{"scm": "git", "is_private": "#{@generated_repo_private?}"}',
-      "https://api.bitbucket.org/2.0/repositories/#{repo_user}/#{package_name}"]
+    args = ~w(-u #{repo_user}:#{repo_pass} -X POST -d) ++
+      ['{"name": "#{package_name}", "private": #{@generated_repo_private?}}',
+      "https://api.github.com/orgs/#{org_id}/repos"]
 
     run("curl", args) |> validate_create_remote
   end
@@ -59,14 +59,14 @@ defmodule Thrifter.GitRepo do
     git_cmd(~w(init))
     git_cmd(~w(remote add origin #{repo_url_pass}/#{package_name}))
     git_cmd(~w(config user.email 'devs@renderedtext.com'))
-    git_cmd(~w(config user.name 'Rendered Text'))
+    git_cmd(~w(config user.name 'RenderedText'))
     sync_repos(create_remote_response, package_name)
     git_cmd(~w(checkout master))
   end
 
   defp repo_url_pass, do: repo_url_base(":#{repo_pass}")
   defp repo_url, do: repo_url_base("")
-  defp repo_url_base(pass), do: "https://#{repo_user}#{pass}@bitbucket.org/#{repo_user}"
+  defp repo_url_base(pass), do: "https://#{repo_user}#{pass}@github.com/#{org_id}"
 
   defp sync_repos(_create_remote_response = {:ok, _}, package_name) do
     File.write("README.md", "#{package_name}")
