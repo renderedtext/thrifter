@@ -1,12 +1,12 @@
 defmodule Thrifter.GitRepo do
   alias Thrifter.Colors
 
-  @debug false
-  @generated_repo_private? true
-
   defp repo_user, do: System.get_env("REPO_USER")
   defp repo_pass, do: System.get_env("REPO_PASS")
   defp org_id, do: System.get_env("ORG_ID")
+
+  defp repo_public?, do: System.get_env("REPO_PUBLIC") == "true"
+  defp debug?, do: System.get_env("DEBUG") == "true"
 
   def init(package_name, client_dir) do
     pushd(client_dir,
@@ -41,10 +41,24 @@ defmodule Thrifter.GitRepo do
 
   defp create_remote(package_name) do
     args = ~w(-u #{repo_user}:#{repo_pass} -X POST -d) ++
-      ['{"name": "#{package_name}", "private": #{@generated_repo_private?}}',
+      ['{"name": "#{package_name}", "private": #{!repo_public?}}',
       "https://api.github.com/orgs/#{org_id}/repos"]
 
     run("curl", args) |> validate_create_remote
+  end
+
+  def get_remote(package_name) do
+    args = ~w(-u #{repo_user}:#{repo_pass} -X GET) ++
+      ["https://api.github.com/repos/#{org_id}/#{package_name}"]
+
+    run("curl", args)
+  end
+
+  def delete_remote(package_name) do
+    args = ~w(-u #{repo_user}:#{repo_pass} -X DELETE) ++
+      ["https://api.github.com/repos/#{org_id}/#{package_name}"]
+
+    run("curl", args)
   end
 
   defp validate_create_remote({output, 0}), do:
@@ -81,7 +95,7 @@ defmodule Thrifter.GitRepo do
   defp git_cmd(args) do run("git", args) end
 
   defp run(cmd, args) do
-     run(cmd, args, @debug)
+     run(cmd, args, debug?)
   end
 
   defp run(cmd, args, _debug = true) do

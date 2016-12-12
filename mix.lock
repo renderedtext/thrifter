@@ -5,4 +5,5 @@
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
   "mock": {:git, "https://github.com/jjh42/mock.git", "13c3b40f0e849c018e6b8afbc9d7da899cf4db1b", []},
   "riffed": {:git, "https://github.com/renderedtext/riffed.git", "f7d772753236d6c52ba685cf49e501e9b7c930b0", [ref: "origin/master"]},
-  "thrift": {:git, "https://github.com/pinterest/elixir-thrift.git", "9c3871cc9568eaf23c701ae11dece7bb5790b8ab", [tag: "1.0.0", submodules: true]}}
+  "thrift": {:git, "https://github.com/pinterest/elixir-thrift.git", "9c3871cc9568eaf23c701ae11dece7bb5790b8ab", [tag: "1.0.0", submodules: true]},
+  "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []}}
