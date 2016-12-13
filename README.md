@@ -29,3 +29,7 @@ mix thrifter.elixir
 ``` bash
 mix thrifter.all
 ```
+
+### Credentials
+
+Credentials needed to use Thrifter can be found at `s3://renderedtext-secrets/thrifter/credentials`.
