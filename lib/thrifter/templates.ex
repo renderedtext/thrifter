@@ -25,9 +25,9 @@ defmodule Thrifter.Templates do
     Mix.shell.info "\nRendering templates:\n"
 
     Enum.zip(templates_paths, output_paths)
-    |> Enum.each fn {template, output} ->
+    |> Enum.each(fn {template, output} ->
       render_one_template(template, output, template_variables)
-    end
+    end)
   end
 
   defp render_one_template(template, output, template_variables) do

@@ -39,7 +39,7 @@ defmodule Mix.Tasks.Thrifter.Elixir do
       Mix.shell.info " - #{Colors.green(src)}"
     end)
 
-    Enum.map(files, fn {src, dest} -> dest end)
+    Enum.map(files, fn {_src, dest} -> dest end)
   end
 
   defp generate_elixir_files do
@@ -52,13 +52,18 @@ defmodule Mix.Tasks.Thrifter.Elixir do
   end
 
   defp template_variables do
+    structs_as_atoms =
+      Thrift.Erlang.structs(thrift_output_dir)
+      |> Enum.map(fn s -> s |> String.to_atom end)
+
     [
       client_name: client_name,
       client_name_atom: client_name |> eex_atom,
       client_module_name: Macro.camelize(client_name),
       service_name: Thrift.Erlang.service_name(thrift_output_dir) |> eex_atom,
       function_names: Thrift.Erlang.function_names(thrift_output_dir),
-      structs: Thrift.Erlang.structs(thrift_output_dir),
+      structs_as_atoms: structs_as_atoms,
+      erl_fajl_name: Thrift.Erlang.erl_fajl_name(thrift_output_dir),
       version: version
     ]
   end

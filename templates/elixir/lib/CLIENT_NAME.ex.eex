@@ -6,12 +6,12 @@ defmodule <%= client_module_name %> do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    host                = Config.get!(:host)
-    port                = Config.get_number!(:port)
+#     host                = Config.get!(:host)
+#     port                = Config.get_number!(:port)
     connection_timeout  = Config.get_number(:timeout) || 3000
 
     children = [
-      worker(<%= client_module_name %>.Client, [{host, port}, connection_timeout]),
+#       worker(<%= client_module_name %>.Client, [{host, port}, connection_timeout]),
     ]
 
     opts = [strategy: :one_for_one, name: <%= client_module_name %>.Supervisor]
