@@ -24,6 +24,6 @@ defmodule Thrifter.GitRepoTest do
   test "duplicate repo creation", context do
     response = context[:id] |> GitRepo.create_remote
 
-    assert response == {:ok, "Remote already exists"}
+    assert response == {:error, "Remote already exists"}
   end
 end

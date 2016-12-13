@@ -58,7 +58,7 @@ defmodule Thrifter.GitRepo do
 
     output
   end
-  def create_remote_(:existing, _remote_name), do: {:ok, "Remote already exists"}
+  def create_remote_(:existing, _remote_name), do: {:error, "Remote already exists"}
 
   def remote_exists?(remote_name), do: !!get_remote(remote_name)["name"]
 
