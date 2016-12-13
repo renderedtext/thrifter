@@ -89,7 +89,7 @@ defmodule Thrifter.GitRepo do
   def err_str, do: inspect(~s(error)) <> ":"
 
   def add_team_to_repo(remote_name) do
-    args = ~w(-u #{repo_user}:#{repo_pass} -X PUT) ++
+    args = ~w(-u #{repo_user}:#{repo_pass} -X PUT -d {"permission":"admin"}) ++
       ["https://api.github.com/teams/#{team_id}/repos/#{org_id}/#{remote_name}"]
 
     curl(args)
