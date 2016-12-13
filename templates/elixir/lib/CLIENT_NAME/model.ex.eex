@@ -1,3 +1,4 @@
 defmodule <%= client_module_name %>.Model do
   use Riffed.Struct, <%= erl_fajl_name %>: <%= inspect(structs_as_atoms) %>
+  use ThriftSerializer
 end
