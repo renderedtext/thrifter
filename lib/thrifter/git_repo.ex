@@ -3,6 +3,7 @@ defmodule Thrifter.GitRepo do
 
   defp repo_user, do: System.get_env("REPO_USER")
   defp repo_pass, do: System.get_env("REPO_PASS")
+  defp team_id, do: System.get_env("TEAM_ID")
   defp org_id, do: System.get_env("ORG_ID")
 
   defp repo_public?, do: System.get_env("REPO_PUBLIC") == "true"
@@ -51,7 +52,11 @@ defmodule Thrifter.GitRepo do
       ['{"name": "#{remote_name}", "private": #{!repo_public?}}',
       "https://api.github.com/orgs/#{org_id}/repos"]
 
-    curl(args) |> decode |> validate_create_remote(remote_name)
+    output = curl(args) |> decode |> validate_create_remote(remote_name)
+
+    if(elem(output, 0) == :ok, do: add_team_to_repo(remote_name))
+
+    output
   end
   def create_remote_(:existing, _remote_name), do: {:ok, "Remote already exists"}
 
@@ -82,6 +87,13 @@ defmodule Thrifter.GitRepo do
   defp decode(message), do: message |> elem(0) |> Poison.decode!
 
   def err_str, do: inspect(~s(error)) <> ":"
+
+  def add_team_to_repo(remote_name) do
+    args = ~w(-u #{repo_user}:#{repo_pass} -X PUT) ++
+      ["https://api.github.com/teams/#{team_id}/repos/#{org_id}/#{remote_name}"]
+
+    curl(args)
+  end
 
   defp files(output_paths, client_dir), do:
       output_paths |> Enum.map(&String.replace(&1, client_dir<>"/", ""))
