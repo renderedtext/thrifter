@@ -1,8 +1,8 @@
 defmodule <%= client_module_name %>.Client do
   use Riffed.Client,
-    auto_import_structs: true,
+    auto_import_structs: false,
     service: <%= service_name %>,
-    structs: <%= client_module_name %>.Models,
+    structs: <%= client_module_name %>.Model,
     client_opts: [
       retries: 3,
       framed: true],

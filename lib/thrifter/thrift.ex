@@ -12,11 +12,11 @@ defmodule Thrifter.Thrift do
 
     File.mkdir_p!(output)
 
-    files |> Enum.each fn file ->
+    files |> Enum.each(fn file ->
       Mix.shell.info " - #{IO.ANSI.green}#{file}#{IO.ANSI.reset}"
 
       System.cmd("thrift", ["-r", "--gen", lang, "-out", output, file])
-    end
+    end)
   end
 
   defmodule Erlang do
@@ -37,6 +37,13 @@ defmodule Thrifter.Thrift do
       "cd #{erlang_source_path}; grep \"struct_info('\" *_types.erl | awk -F \"'\" '{ print $2 }'"
       |> os_cmd
       |> String.split
+    end
+
+    # TODO Works only for **ONE** .thrift file in directory
+    def erl_fajl_name(erlang_source_path) do
+      File.ls!(erlang_source_path)
+      |> Enum.find(fn file -> file |> String.ends_with?("types.erl") end)
+      |> String.split(".") |> Enum.at(0)
     end
 
     defp os_cmd(cmd) do
