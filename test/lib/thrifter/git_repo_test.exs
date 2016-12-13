@@ -3,7 +3,7 @@ defmodule Thrifter.GitRepoTest do
 
   alias Thrifter.GitRepo
 
-  setup do
+  setup_all do
     id = UUID.uuid1
 
     File.mkdir(id)
@@ -18,14 +18,12 @@ defmodule Thrifter.GitRepoTest do
   end
 
   test "repo creation", context do
-    assert context[:id] |> found?
+    assert context[:id] |> GitRepo.remote_exists?
   end
 
-  defp found?(id) do
-    id 
-    |> GitRepo.get_remote 
-    |> elem(0) 
-    |> String.contains?("Not Found")
-    |> Kernel.not
+  test "duplicate repo creation", context do
+    response = context[:id] |> GitRepo.create_remote
+
+    assert response == {:ok, "Remote already exists"}
   end
 end

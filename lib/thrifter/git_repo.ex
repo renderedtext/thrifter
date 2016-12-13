@@ -39,30 +39,47 @@ defmodule Thrifter.GitRepo do
     File.cd!(old_wd)
   end
 
-  defp create_remote(package_name) do
+  def create_remote(name) do
+    name
+    |> remote_exists?
+    |> if(do: :existing, else: :new)
+    |> create_remote_(name)
+  end
+
+  def create_remote_(:new, remote_name) do
     args = ~w(-u #{repo_user}:#{repo_pass} -X POST -d) ++
-      ['{"name": "#{package_name}", "private": #{!repo_public?}}',
+      ['{"name": "#{remote_name}", "private": #{!repo_public?}}',
       "https://api.github.com/orgs/#{org_id}/repos"]
 
-    run("curl", args) |> validate_create_remote
+    curl(args) |> decode |> validate_create_remote(remote_name)
   end
+  def create_remote_(:existing, _remote_name), do: {:ok, "Remote already exists"}
 
-  def get_remote(package_name) do
+  def remote_exists?(remote_name), do: !!get_remote(remote_name)["name"]
+
+  def get_remote(remote_name) do
     args = ~w(-u #{repo_user}:#{repo_pass} -X GET) ++
-      ["https://api.github.com/repos/#{org_id}/#{package_name}"]
+      ["https://api.github.com/repos/#{org_id}/#{remote_name}"]
 
-    run("curl", args)
+    curl(args) |> decode
   end
 
-  def delete_remote(package_name) do
+  def delete_remote(remote_name) do
     args = ~w(-u #{repo_user}:#{repo_pass} -X DELETE) ++
-      ["https://api.github.com/repos/#{org_id}/#{package_name}"]
+      ["https://api.github.com/repos/#{org_id}/#{remote_name}"]
 
-    run("curl", args)
+    curl(args)
   end
 
-  defp validate_create_remote({output, 0}), do:
-     if(String.contains?(output, err_str), do: {:error, output}, else: {:ok, output})
+  defp validate_create_remote(response, name) do
+    status = if(response["name"] == name, do: :ok, else: :error)
+
+    {status, response}
+  end
+
+  defp curl(args), do: run("curl", args) 
+
+  defp decode(message), do: message |> elem(0) |> Poison.decode!
 
   def err_str, do: inspect(~s(error)) <> ":"
 
@@ -108,5 +125,5 @@ defmodule Thrifter.GitRepo do
     run_(cmd, args)
   end
 
-  defp run_(cmd, args) do System.cmd(cmd, args, stderr_to_stdout: true) end
+  defp run_(cmd, args) do System.cmd(cmd, args) end
 end

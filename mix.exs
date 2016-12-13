@@ -11,14 +11,15 @@ defmodule Thrifter.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :uuid]]
+    [applications: [:logger, :uuid, :poison]]
   end
 
   defp deps do
     [
       {:riffed, github: "renderedtext/riffed", ref: "origin/master"},
       {:ex_spec, "~> 1.0", only: :test},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:poison, "~> 2.0"}
     ]
   end
 end
