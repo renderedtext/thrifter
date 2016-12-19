@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Thrifter.Elixir do
 
     Mix.shell.info "\nElixir client generated in #{Colors.green(client_dir)}\n"
 
-    output_paths ++ copyed_files
+    output_paths ++ copyed_files ++ [thrift_output_dir]
     |> GitRepo.create_package(package_name, client_dir, version)
   end
 
