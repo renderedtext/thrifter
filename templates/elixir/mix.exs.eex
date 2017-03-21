@@ -13,14 +13,14 @@ defmodule <%= client_module_name %>.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :thrift_serializer],
+    [applications: [:logger, :thttpt, :thrift_serializer],
      mod: {<%= client_module_name %>, []}]
   end
 
   defp deps do
     [
-      {:riffed, github: "renderedtext/riffed", ref: "origin/master", override: true},
-      {:thrift_serializer, github: "renderedtext/ex-thrift-serializer"},
+      {:thttpt,            git: "git@github.com:renderedtext/ex-thttpt.git"},
+      # {:thrift_serializer, github: "renderedtext/ex-thrift-serializer"},
     ]
   end
 end
