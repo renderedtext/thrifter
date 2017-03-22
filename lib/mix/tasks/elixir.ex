@@ -10,7 +10,9 @@ defmodule Mix.Tasks.Thrifter.Elixir do
 
   def client_dir, do: "gen/elixir-client"
   def thrift_output_dir, do: "#{client_dir}/src"
-  def client_name, do: Mix.Project.config[:app] |> Atom.to_string
+  def client_name do
+    (Mix.Project.config[:app] |> Atom.to_string) <> "_generated_client"
+  end
   def version, do: Mix.Project.config[:version]
 
   def run(_) do
@@ -77,7 +79,5 @@ defmodule Mix.Tasks.Thrifter.Elixir do
     |> Enum.map(&String.replace(&1, "CLIENT_NAME", client_name))
   end
 
-  defp package_name do
-    (client_name |> String.replace("_", "-")) <> "-generated-client"
-  end
+  defp package_name do (client_name |> String.replace("_", "-")) end
 end
