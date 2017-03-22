@@ -16,7 +16,7 @@ defmodule Thrifter.Mixfile do
 
   defp deps do
     [
-      {:riffed, github: "renderedtext/riffed", ref: "origin/master"},
+      {:thttpt,            git: "git@github.com:renderedtext/ex-thttpt.git"},
       {:ex_spec, "~> 1.0", only: :test},
       {:uuid, "~> 1.1"},
       {:poison, "~> 2.0"}

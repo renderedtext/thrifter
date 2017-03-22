@@ -1,0 +1,18 @@
+# <%= client_module_name %> Generated Client
+This is *Thrifter* generated repository.
+All manual changes will be overridden.
+
+## Http Transport client
+To be able to use this client you need to define `host` and `port`
+on which server is litening in config directory:
+```
+config <%= client_name_atom %>, host: "server_host_name"
+config <%= client_name_atom %>, port: server_port_number
+```
+
+Or if you need those values to be runt-time configurable you can specify
+env vars to be read from, like this:
+```
+config <%= client_name_atom %>, host: {:system, "SERVER_HOST"}
+config <%= client_name_atom %>, port: {:system, "SERVER_PORT"}
+```
