@@ -8,7 +8,7 @@ defmodule <%= client_module_name %> do
 
 #     host                = Config.get!(:host)
 #     port                = Config.get_number!(:port)
-    connection_timeout  = Config.get_number(:timeout) || 3000
+#     connection_timeout  = Config.get_number(:timeout) || 3000
 
     children = [
 #       worker(<%= client_module_name %>.Client, [{host, port}, connection_timeout]),

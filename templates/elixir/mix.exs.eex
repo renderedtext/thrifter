@@ -7,8 +7,6 @@ defmodule <%= client_module_name %>.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     compilers: [:thrift | Mix.compilers],
-     thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
      deps: deps]
   end
 
@@ -19,8 +17,7 @@ defmodule <%= client_module_name %>.Mixfile do
 
   defp deps do
     [
-      {:thttpt,            git: "git@github.com:renderedtext/ex-thttpt.git"},
-      # {:thrift_serializer, github: "renderedtext/ex-thrift-serializer"},
+      {:thttpt, git: "git@github.com:renderedtext/ex-thttpt.git"},
     ]
   end
 end
