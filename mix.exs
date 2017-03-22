@@ -11,7 +11,7 @@ defmodule Thrifter.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :uuid, :poison]]
+    [applications: [:logger, :thttpt, :uuid, :poison]]
   end
 
   defp deps do
