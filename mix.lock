@@ -20,5 +20,5 @@
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
   "thrift": {:hex, :thrift, "1.3.2", "307e1bbb896afa9726ded9edf4a6dfa216f46562b25b173e200a3d381d8af230", [:mix], []},
   "thrift_serializer": {:git, "https://github.com/renderedtext/ex-thrift-serializer.git", "06188176367e0f86373185cea6dbd22b419c44f7", []},
-  "thttpt": {:git, "git@github.com:renderedtext/ex-thttpt.git", "737a6079fb27352dd7b36ad7c892d973ebd2d13e", []},
+  "thttpt": {:git, "git@github.com:renderedtext/ex-thttpt.git", "14cd3ae1c04b23c6d4d213b8af2853b8d101dfa6", []},
   "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []}}
