@@ -1,5 +1,6 @@
 defmodule <%= client_module_name %>.HttpClient do
   use ThriftHttpTransport.Client,
     host: <%= client_module_name %>.Config.get(:host),
-    port: <%= client_module_name %>.Config.get(:port)
+    port: <%= client_module_name %>.Config.get(:port),
+    tls:  <%= client_module_name %>.Config.get(:tls)
 end
